@@ -7,15 +7,22 @@
 
 	const projectId = 'd2617bcfdd3e342d8f37aa63a80482ad';
 
-	const chains = [holesky, sepolia];
+	const chains = [holesky, sepolia] as const;
 
-	const transports = chains.reduce((acc, { id }) => ({ ...acc, [id]: http() }), {});
+	
+	function createTransports(chains: readonly Chain[]) {
+	const transports = chains.reduce((acc, chain) => {
+		const { id } = chain;
+		return { ...acc, [id]: http() };
+	}, {} as Record<number, ReturnType<typeof http>>);
+
+	return transports;
+	}
 
 	export const config = createConfig({
-		//@ts-expect-error "This is also a bug in the library, it should accept an array of chains."
 		chains: [...chains],
 		connectors: [walletConnect({ projectId, showQrModal: false }), injected()],
-		transports
+		transports: createTransports(chains)
 	});
 
 	reconnect(config);
