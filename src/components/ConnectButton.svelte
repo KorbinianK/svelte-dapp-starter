@@ -4,7 +4,7 @@
 	import { holesky, sepolia, type Chain } from 'viem/chains';
 	import { createConfig, http, injected, reconnect } from '@wagmi/core';
 	import { walletConnect } from '@wagmi/connectors';
-	import { chains } from '$lib';
+	import { chains as customChains } from '$lib';
 
 	const projectId = 'd2617bcfdd3e342d8f37aa63a80482ad';
 
@@ -20,10 +20,13 @@
 		return transports;
 	}
 
+	// replace customChains with this and it works
+	const configuredChains = [holesky, sepolia];
+
 	export const config = createConfig({
-		chains,
+		chains: customChains,
 		connectors: [walletConnect({ projectId, showQrModal: false }), injected()],
-		transports: createTransports(chains)
+		transports: createTransports(customChains)
 	});
 
 	reconnect(config);
